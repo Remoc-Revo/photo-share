@@ -1,5 +1,10 @@
+// This makes the crypto module available globally, which can resolve issues
+// with some libraries (like @azure/storage-blob) that expect it in the global scope.
+global.crypto = require('crypto');
 require('dotenv').config();
+
 const express = require('express');
+const morgan = require('morgan');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { setupContainer } = require('./helpers/azureBlobStorage');
@@ -7,6 +12,7 @@ const { setupContainer } = require('./helpers/azureBlobStorage');
 const app = express();
 
 // Middleware
+app.use(morgan('dev'));
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
@@ -16,7 +22,7 @@ const authRoutes = require('./routes/auth');
 const mediaRoutes = require('./routes/media');
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth',(req,res,next)=>{console.log('authRoutes'); next()} ,authRoutes);
 app.use('/api/media', mediaRoutes);
 app.get('/', (req, res) => {
   res.send('Photo-Share API is running!');
