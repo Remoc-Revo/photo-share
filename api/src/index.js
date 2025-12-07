@@ -8,17 +8,31 @@ const morgan = require('morgan');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { setupContainer } = require('./helpers/azureBlobStorage');
+const session = require('express-session');
 
 const app = express();
 
 // Middleware
 app.use(morgan('dev'));
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL, 
+  credentials: true, // This allows session cookies to be sent and received
+}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false, // Don't create session until something is stored
+  cookie: {
+    httpOnly: true, // Prevents client-side JS from reading the cookie
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    maxAge: 1000 * 60 * 60 * 24 // Expires in 1 day
+  }
+}));
 
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/authRoutes');
 const mediaRoutes = require('./routes/media');
 
 // Routes

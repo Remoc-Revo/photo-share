@@ -12,14 +12,14 @@ const uploadMedia = async (mediaData, file) => {
 
     // 2. Create media record in the database
     const newMedia = {
-        user_id: userId,
+        creator_id: userId,
         title,
         caption,
         location,
-        visibility,
-        url: imageUrl,
-        blob_name: blobName,
-        thumbnail_url: '', // Will be updated by the worker
+        is_public: visibility === 'public' ? 1 : 0,
+        blob_url: imageUrl,
+        filename: blobName,
+        thumbnail_blob_url: '', // Will be updated by the worker
     };
     const savedMedia = await mediaRepository.createMedia(newMedia);
 

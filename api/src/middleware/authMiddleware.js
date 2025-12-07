@@ -1,31 +1,14 @@
-const jwt = require('jsonwebtoken');
-const userRepository = require('../repositories/userRepository');
-
-const protect = async (req, res, next) => {
-    let token;
-
-    if (req.cookies && req.cookies.token) {
-        token = req.cookies.token;
-    }
-
-    if (!token) {
-        return res.status(401).json({ message: 'Not authorized, no token' });
-    }
-
-    try {
-        // Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        // Get user from the token
-        req.user = await userRepository.findUserById(decoded.id);
-        
-        if (!req.user) {
-            return res.status(401).json({ message: 'Not authorized, user not found' });
-        }
-
+/**
+ * Middleware to protect routes that require authentication.
+ * It checks for a user object in the session.
+ */
+const protect = (req, res, next) => {
+    if (req.session && req.session.user) {
+        // The user is authenticated, attach user info to the request object
+        req.user = req.session.user;
         next();
-    } catch (error) {
-        res.status(401).json({ message: 'Not authorized, token failed' });
+    } else {
+        res.status(401).json({ message: 'Not authorized, please log in' });
     }
 };
 

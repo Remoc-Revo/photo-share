@@ -8,31 +8,32 @@ const createMedia = async (media) => {
 
 const getMediaById = async (id) => {
     const [rows] = await pool.query(`
-        SELECT m.*, u.username as creator_name, AVG(r.rating) as average_rating, COUNT(c.id) as comment_count
+        SELECT m.*, u.name as creator_name, AVG(r.rating) as average_rating, COUNT(c.id) as comment_count
         FROM media m
-        JOIN users u ON m.user_id = u.id
+        JOIN users u ON m.creator_id = u.id
         LEFT JOIN ratings r ON m.id = r.media_id
         LEFT JOIN comments c ON m.id = c.media_id
-        WHERE m.id = ? AND m.visibility = 'public'
+        WHERE m.id = ? AND m.is_public = 1
         GROUP BY m.id
     `, [id]);
+    
     return rows[0];
 };
 
 const getPublicMedia = async ({ page = 1, limit = 10, filter, search }) => {
     let query = `
-        SELECT m.id, m.title, m.thumbnail_url, u.username as creator_name, 
+        SELECT m.id, m.title, m.thumbnail_blob_url, u.name as creator_name, 
                AVG(r.rating) as average_rating, COUNT(DISTINCT c.id) as comment_count
         FROM media m
-        JOIN users u ON m.user_id = u.id
+        JOIN users u ON m.creator_id = u.id
         LEFT JOIN ratings r ON m.id = r.media_id
         LEFT JOIN comments c ON m.id = c.media_id
-        WHERE m.visibility = 'public'
+        WHERE m.is_public = 1
     `;
     const params = [];
 
     if (search) {
-        query += ` AND (m.title LIKE ? OR m.location LIKE ? OR u.username LIKE ?)`;
+        query += ` AND (m.title LIKE ? OR m.caption LIKE ? OR u.name LIKE ?)`;
         params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
