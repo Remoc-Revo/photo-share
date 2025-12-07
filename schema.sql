@@ -99,7 +99,7 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `role` enum('consumer','creator','admin') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'consumer',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,

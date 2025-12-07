@@ -13,7 +13,7 @@ const findUserById = async (id) => {
 const createUser = async (user) => {
     const { email, password, username, role } = user;
     const [result] = await pool.query(
-        'INSERT INTO users (email, password, username, role) VALUES (?, ?, ?, ?)',
+        'INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)',
         [email, password, username, role]
     );
     return { id: result.insertId, ...user };
