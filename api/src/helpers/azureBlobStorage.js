@@ -1,51 +1,41 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
 
-const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
+const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING || 'DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;';
+const CONTAINER_NAME = process.env.AZURE_STORAGE_CONTAINER_NAME || 'azurite';
+const BASE_BLOB_URL = process.env.AZURE_STORAGE_BASE_URL;
 
-// Centralized validation. The application's entry point (index.js) is responsible for loading .env.
-// This module just consumes the variables.
-if (!connectionString || !containerName) {
-  throw new Error('Azure Storage connection string or container name is not configured. Please check your .env file.');
-}
+const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
 
-const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
-const containerClient = blobServiceClient.getContainerClient(containerName);
-
-/**
- * Ensures the Azure Blob Storage container exists. If not, it creates it with public blob access.
- */
 const setupContainer = async () => {
-    try {
-        const createContainerResponse = await containerClient.createIfNotExists({
-            access: 'blob' // public access for blobs
-        });
-        if (createContainerResponse.succeeded) {
-            console.log(`Azure Storage: Container '${containerName}' created successfully.`);
-        } else {
-            console.log(`Azure Storage: Container '${containerName}' already exists.`);
-        }
-    } catch (error) {
-        console.error(`Azure Storage: Fatal error during container setup: ${error.message}`);
-        // In a real production app, you might want to exit if storage isn't available.
-        process.exit(1);
-    }
+    const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
+    await containerClient.createIfNotExists({ access: 'blob' });
+    console.log(`Storage container '${CONTAINER_NAME}' is ready.`);
 };
 
 const uploadBlob = async (blobName, buffer, size) => {
-  const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-  await blockBlobClient.upload(buffer, size);
-  return blockBlobClient.url;
+    const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    await blockBlobClient.upload(buffer, size);
+    // Return the publicly accessible URL
+    return `${BASE_BLOB_URL}/${CONTAINER_NAME}/${blobName}`;
 };
 
 const deleteBlob = async (blobName) => {
-  const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-  await blockBlobClient.deleteIfExists();
+    try {
+        const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
+        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+        await blockBlobClient.delete();
+    } catch (error) {
+        // It's often okay to ignore "blob not found" errors during deletion
+        if (error.statusCode !== 404) {
+            console.error(`Error deleting blob ${blobName}:`, error);
+            throw error;
+        }
+    }
 };
 
 module.exports = {
-  uploadBlob,
-  deleteBlob,
-  setupContainer,
-  containerClient
+    setupContainer,
+    uploadBlob,
+    deleteBlob,
 };

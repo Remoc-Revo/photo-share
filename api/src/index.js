@@ -9,6 +9,18 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { setupContainer } = require('./helpers/azureBlobStorage');
 const session = require('express-session');
+const RedisStore = require('connect-redis').default;
+const { createClient } = require('redis');
+
+// Initialize Redis client and store
+// The URL points to the 'redis' service in your docker-compose.yml
+const redisClient = createClient({ url: 'redis://redis:6379' });
+redisClient.connect().catch(console.error);
+
+const redisStore = new RedisStore({
+  client: redisClient,
+  prefix: 'photosess:', // A prefix for session keys in Redis
+});
 
 const app = express();
 
@@ -22,6 +34,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
+  store: redisStore,
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false, // Don't create session until something is stored

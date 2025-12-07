@@ -23,7 +23,7 @@ const MediaDetailPage = () => {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-                <img src={media.url} alt={media.title} className="w-full object-cover" style={{ maxHeight: '70vh' }} />
+                <img src={media.blob_url} alt={media.title} className="w-full object-cover" style={{ maxHeight: '70vh' }} />
                 <div className="p-6">
                     <h1 className="text-3xl font-bold mb-2">{media.title}</h1>
                     <p className="text-gray-600 mb-4">by {media.creator_name}</p>

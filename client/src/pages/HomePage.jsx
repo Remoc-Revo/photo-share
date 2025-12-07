@@ -23,7 +23,7 @@ const HomePage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {media.map((item) => (
                         <Link to={`/media/${item.id}`} key={item.id} className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                            <img src={item.thumbnail_blob_url || 'https://via.placeholder.com/200'} alt={item.title} className="w-full h-48 object-cover" />
+                            <img src={item.thumbnail_blob_url || item.blob_url || 'https://via.placeholder.com/200'} alt={item.title} className="w-full h-48 object-cover" />
                             <div className="p-4">
                                 <h2 className="font-bold text-lg mb-2">{item.title}</h2>
                                 <p className="text-gray-600 text-sm">by {item.creator_name}</p>

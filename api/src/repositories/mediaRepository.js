@@ -22,7 +22,7 @@ const getMediaById = async (id) => {
 
 const getPublicMedia = async ({ page = 1, limit = 10, filter, search }) => {
     let query = `
-        SELECT m.id, m.title, m.thumbnail_blob_url, u.name as creator_name, 
+        SELECT m.id, m.blob_url, m.title, m.thumbnail_blob_url, u.name as creator_name, 
                AVG(r.rating) as average_rating, COUNT(DISTINCT c.id) as comment_count
         FROM media m
         JOIN users u ON m.creator_id = u.id
