@@ -22,11 +22,13 @@ const authRoutes = require('./routes/auth');
 const mediaRoutes = require('./routes/media');
 
 // Routes
-app.use('/api/auth',(req,res,next)=>{console.log('authRoutes logging ds'); next()} ,authRoutes);
+app.use('/api/auth',(req,res,next)=>{console.log('authRoutes logging  ds'); next()} ,authRoutes);
 app.use('/api/media', mediaRoutes);
 app.get('/', (req, res) => {
   res.send('Photo-Share API is running!');
 });
+
+
 
 const PORT = process.env.PORT || 3001;
 

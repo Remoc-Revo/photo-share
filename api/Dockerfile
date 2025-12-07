@@ -1,8 +1,8 @@
 # ---- Base Stage ----
 FROM node:18-slim AS base
 WORKDIR /usr/src/app
-# Install crypto dependency explicitly
-RUN require('crypto');
+
+
 
 # ---- Dependencies Stage ----
 FROM base AS dependencies
