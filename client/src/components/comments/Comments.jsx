@@ -45,8 +45,8 @@ const Comments = ({ mediaId }) => {
 
     const renderComment = (c) => (
         <div key={c.id} className="bg-gray-100 p-3 rounded-lg mb-3">
-            <p className="font-semibold">{c.username}</p>
-            <p className="text-gray-700">{c.comment}</p>
+            <p className="font-semibold">{c.name}</p>
+            <p className="text-gray-700">{c.text}</p>
             <p className="text-xs text-gray-500 mt-1">{new Date(c.created_at).toLocaleString()}</p>
             {/* Reply form could be added here */}
             {c.replies && c.replies.length > 0 && (
