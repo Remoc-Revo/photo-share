@@ -16,6 +16,8 @@ export const AuthProvider = ({ children }) => {
                 // Assumes an endpoint that returns the user if a session is active
                 const { data } = await axios.get('/api/auth/me');
                 setUser(data.user);
+
+                console.log("user is ", user);
             } catch (error) {
                 // No active session or an error occurred
                 setUser(null);

@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
-import Navbar from './components/layout/Navbar';
+import MainLayout from './pages/MainLayout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -17,26 +17,24 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Router>
-          <Navbar />
-          <main className="container mx-auto px-4 py-8">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/media/:id" element={<MediaDetailPage />} />
-              <Route path="/profile/:userId" element={<ProfilePage />} />
-              
-              {/* Protected Routes */}
-              <Route 
-                path="/upload" 
-                element={
-                  <ProtectedRoute roles={['creator']}>
-                    <MediaUploadPage />
-                  </ProtectedRoute>
-                } 
-              />
-            </Routes>
-          </main>
+          <Routes>
+            {/* Routes with the new MainLayout */}
+            <Route path="/" element={<MainLayout><HomePage /></MainLayout>} />
+            <Route path="/media/:id" element={<MainLayout><MediaDetailPage /></MainLayout>} />
+            <Route path="/profile/:userId" element={<MainLayout><ProfilePage /></MainLayout>} />
+            <Route 
+              path="/upload" 
+              element={
+                <ProtectedRoute roles={['creator']}>
+                  <MainLayout><MediaUploadPage /></MainLayout>
+                </ProtectedRoute>
+              } 
+            />
+
+            {/* Standalone routes without the layout */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+          </Routes>
         </Router>
       </AuthProvider>
     </QueryClientProvider>

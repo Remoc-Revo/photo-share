@@ -58,7 +58,7 @@ The frontend does not require any specific environment variables to run locally,
 This command will start the MySQL database, Redis for queues, and Azurite for local blob storage.
 
 ```bash
-docker-compose up -d
+docker compose up --build -d
 ```
 
 ### 4. Setup Database Schema

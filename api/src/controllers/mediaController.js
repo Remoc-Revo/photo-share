@@ -28,7 +28,6 @@ const getPublicMedia = async (req, res) => {
         const { page = 1, limit = 10, filter, search } = req.query;
         const media = await mediaService.getPublicMedia({ page, limit, filter, search });
 
-        console.log("media", media)
         
         res.json(media);
     } catch (error) {
@@ -42,6 +41,7 @@ const getMediaById = async (req, res) => {
         if (!media) {
             return res.status(404).json({ message: 'Media not found' });
         }
+        
         res.json(media);
     } catch (error) {
         res.status(500).json({ message: error.message });

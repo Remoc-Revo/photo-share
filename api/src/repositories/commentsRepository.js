@@ -3,7 +3,7 @@ const pool = require('../config/database');
 const createComment = async (commentData) => {
     const { media_id, user_id, comment, parent_comment_id } = commentData;
     const [result] = await pool.query(
-        'INSERT INTO comments (media_id, user_id, comment, parent_comment_id) VALUES (?, ?, ?, ?)',
+        'INSERT INTO comments (media_id, user_id, text, parent_comment_id) VALUES (?, ?, ?, ?)',
         [media_id, user_id, comment, parent_comment_id]
     );
     const [rows] = await pool.query('SELECT * FROM comments WHERE id = ?', [result.insertId]);
@@ -17,7 +17,7 @@ const getCommentById = async (id) => {
 
 const getCommentsByMediaId = async (mediaId) => {
     const [rows] = await pool.query(`
-        SELECT c.*, u.username 
+        SELECT c.*, u.name 
         FROM comments c
         JOIN users u ON c.user_id = u.id
         WHERE c.media_id = ?

@@ -1,7 +1,7 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING || 'DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;';
-const CONTAINER_NAME = process.env.AZURE_STORAGE_CONTAINER_NAME || 'azurite';
+const CONTAINER_NAME = process.env.AZURE_STORAGE_CONTAINER_NAME;
 const BASE_BLOB_URL = process.env.AZURE_STORAGE_BASE_URL;
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
