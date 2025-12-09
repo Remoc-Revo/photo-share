@@ -44,13 +44,13 @@ const Comments = ({ mediaId }) => {
     if (error) return <div>Error loading comments.</div>;
 
     const renderComment = (c) => (
-        <div key={c.id} className="bg-gray-100 p-3 rounded-lg mb-3">
-            <p className="font-semibold">{c.name}</p>
-            <p className="text-gray-700">{c.text}</p>
-            <p className="text-xs text-gray-500 mt-1">{new Date(c.created_at).toLocaleString()}</p>
+        <div key={c.id} className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg mb-3">
+            <p className="font-semibold dark:text-gray-200">{c.name}</p>
+            <p className="text-gray-700 dark:text-gray-300">{c.text}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{new Date(c.created_at).toLocaleString()}</p>
             {/* Reply form could be added here */}
             {c.replies && c.replies.length > 0 && (
-                <div className="ml-6 mt-3 border-l-2 border-gray-300 pl-3">
+                <div className="ml-6 mt-3 border-l-2 border-gray-300 dark:border-gray-700 pl-3">
                     {c.replies.map(renderComment)}
                 </div>
             )}
@@ -59,14 +59,14 @@ const Comments = ({ mediaId }) => {
 
     return (
         <div>
-            <h2 className="text-2xl font-bold mb-4">Comments</h2>
+            <h2 className="text-2xl font-bold mb-4 dark:text-white">Comments</h2>
             {user && (
                 <form onSubmit={handleSubmit} className="mb-6">
                     <textarea
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         placeholder="Write a comment..."
-                        className="w-full p-2 border rounded-md"
+                        className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                         rows="3"
                         required
                     ></textarea>

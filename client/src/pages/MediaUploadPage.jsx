@@ -58,26 +58,26 @@ const MediaUploadPage = () => {
             <h1 className="text-3xl font-bold mb-6">Upload Media</h1>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
-                    <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"/>
+                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                    <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="e.g., Sunset at the beach" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"/>
                 </div>
                 <div>
-                    <label htmlFor="caption" className="block text-sm font-medium text-gray-700">Caption</label>
-                    <textarea id="caption" value={caption} onChange={(e) => setCaption(e.target.value)} rows="3" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    <label htmlFor="caption" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Caption</label>
+                    <textarea id="caption" value={caption} onChange={(e) => setCaption(e.target.value)} rows="3" placeholder="A short description of the image" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></textarea>
                 </div>
                 <div>
-                    <label htmlFor="location" className="block text-sm font-medium text-gray-700">Location</label>
-                    <input type="text" id="location" value={location} onChange={(e) => setLocation(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"/>
+                    <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Location</label>
+                    <input type="text" id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g., Malibu, California" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"/>
                 </div>
                 <div>
-                    <label htmlFor="visibility" className="block text-sm font-medium text-gray-700">Visibility</label>
-                    <select id="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <label htmlFor="visibility" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibility</label>
+                    <select id="visibility" value={visibility} onChange={(e) => setVisibility(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <option value="public">Public</option>
                         <option value="private">Private</option>
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Image</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Image</label>
                     <input type="file" onChange={handleImageChange} accept="image/*" required className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"/>
                     {preview && <img src={preview} alt="Preview" className="mt-4 h-48 w-auto"/>}
                 </div>
