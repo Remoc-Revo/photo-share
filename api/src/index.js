@@ -47,10 +47,12 @@ app.use(session({
 
 const authRoutes = require('./routes/authRoutes');
 const mediaRoutes = require('./routes/media');
-
+const userRoutes = require('./routes/users')
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/users', userRoutes);
+
 app.get('/', (req, res) => {
   res.send('Photo-Share API is running!');
 });

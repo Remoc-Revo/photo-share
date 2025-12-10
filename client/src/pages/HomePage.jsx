@@ -91,15 +91,21 @@ const HomePage = () => {
                 <div>
                     {media.map((item) => (
                         <div key={item.id} className="p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200">
-                            <Link to={`/profile/${item.user_id}`} className="font-bold hover:underline">{item.creator_name}</Link>
+                            <div className="flex justify-between items-center mb-2">
+                                <Link to={`/profile/${item.creator_id}`} className="flex items-center space-x-2 font-bold hover:underline text-gray-800 dark:text-gray-200">
+                                    <FaUserCircle className="w-6 h-6 text-gray-400" />
+                                    <span>{item.creator_name}</span>
+                                </Link>
+                                <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(item.created_at).toLocaleDateString()}</span>
+                            </div>
                             <Link to={`/media/${item.id}`}>
                                 <p className="my-1">{item.title}</p>
                                 <img src={item.thumbnail_blob_url || item.blob_url} alt={item.title} className="mt-2 rounded-2xl border border-gray-200 dark:border-gray-700 w-full object-cover" />
+                                <div className="flex items-center text-gray-500 dark:text-gray-400 space-x-8 mt-3">
+                                    <div className="flex items-center space-x-2 hover:text-blue-500"><FaRegComment /> <span>{item.comment_count || 0}</span></div>
+                                    <div className="flex items-center space-x-2 hover:text-yellow-500"><FaStar /> <span>{parseFloat(item.average_rating || 0).toFixed(1)}</span></div>
+                                </div>
                             </Link>
-                            <div className="flex items-center text-gray-500 dark:text-gray-400 space-x-8 mt-3">
-                                <div className="flex items-center space-x-2 hover:text-blue-500"><FaRegComment /> <span>{item.comment_count || 0}</span></div>
-                                <div className="flex items-center space-x-2 hover:text-yellow-500"><FaStar /> <span>{parseFloat(item.average_rating || 0).toFixed(1)}</span></div>
-                            </div>
                         </div>
                     ))}
                 </div>

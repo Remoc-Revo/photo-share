@@ -12,7 +12,7 @@ const searchMedia = async (req, res) => {
 
         // Perform a case-insensitive search on creator_name, title, and caption
         const query = `
-            SELECT m.id, u.name AS creator_name, m.title, m.caption, m.blob_url, m.created_at
+            SELECT m.id,m.creator_id, u.name AS creator_name, m.title, m.caption, m.blob_url, m.created_at
            FROM media m
             JOIN users u ON m.creator_id = u.id
             WHERE is_public = 1

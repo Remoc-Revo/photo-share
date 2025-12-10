@@ -72,10 +72,21 @@ const deleteMedia = async (req, res) => {
     }
 };
 
+const getMediaByUserId = async (req, res) => {
+    try {
+        // This reuses the existing service function, assuming it can handle filtering by user ID
+        const media = await mediaService.getPublicMedia({ userId: req.params.userId });
+        res.json(media);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     uploadMedia,
     getPublicMedia,
     getMediaById,
     updateMedia,
-    deleteMedia
+    deleteMedia,
+    getMediaByUserId
 };

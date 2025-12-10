@@ -7,7 +7,7 @@ This project is a full-stack photo-sharing web application built with Node.js, E
 -   **Authentication:** JWT-based authentication with email/password.
 -   **Media Management:** Upload, edit, and delete images for creators.
 -   **Image Processing:** Automated thumbnail generation and image optimization.
--   **Community Features:** Rate media, post comments with threaded replies.
+-   **Community Features:** Rate media, post comments 
 -   **Search & Discovery:** Public gallery with search and filtering.
 -   **User Profiles:** View user-specific content.
 
