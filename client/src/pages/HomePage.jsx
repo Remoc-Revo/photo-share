@@ -1,32 +1,54 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaRegComment, FaStar, FaUserCircle, FaImage, FaSearch } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-const fetchMedia = async (searchTerm) => {
-    // If a search term exists, use the search endpoint. Otherwise, get all public media.
-    // Note: The search endpoint seems to be /api/media/search based on your routes.
-    const url = searchTerm ? `/api/media/search?q=${searchTerm}` : '/api/media';
+const fetchMedia = async ({ pageParam = 1, searchTerm }) => {
+    const limit = 1;
+    const url = searchTerm
+        ? `/api/media/search?q=${searchTerm}&page=${pageParam}&limit=${limit}`
+        : `/api/media?page=${pageParam}&limit=${limit}`;
     const { data } = await axios.get(url);
-    
-    return data;
+    return { data, nextPage: data.length === limit ? pageParam + 1 : undefined };
 };
 
 const HomePage = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const loadMoreRef = useRef(null);
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // The query key now includes the search term.
-    // React Query will automatically re-run this query when `searchTerm` changes.
-    const { data: media, error, isLoading } = useQuery({
+    const {
+        data,
+        error,
+        isLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useInfiniteQuery({
         queryKey: ['publicMedia', searchTerm],
-        queryFn: () => fetchMedia(searchTerm),
-        keepPreviousData: true, // Optional: for a smoother UX while new search results are loading
+        queryFn: ({ pageParam }) => fetchMedia({ pageParam, searchTerm }),
+        // Add a check to ensure lastPage is defined before accessing nextPage
+        getNextPageParam: (lastPage) => {
+            // lastPage will be the object returned from fetchMedia
+            return lastPage?.nextPage;
+        },
     });
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+                    fetchNextPage();
+                }
+            }, { threshold: 1.0 }
+        );
+        if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+        return () => observer.disconnect();
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     if (error) return <div className="p-4">An error occurred: {error.message}</div>;
 
@@ -65,7 +87,7 @@ const HomePage = () => {
                 </div>
             )}
 
-            {/* Sleek "Create Post" UI */}
+            {/* "Create Post" UI */}
             {user && user.role == 'creator' && ( // Only show if user is logged in AND is a creator
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700" onClick={() => navigate('/upload')}>
                     <div className="flex items-start space-x-4">
@@ -87,27 +109,34 @@ const HomePage = () => {
 
             {isLoading ? (
                 <div className="p-4 text-center">Loading feed...</div>
-            ) : media && media.length > 0 ? (
+            ) : data && data.pages.some(page => page.data.length > 0) ? (
                 <div>
-                    {media.map((item) => (
-                        <div key={item.id} className="p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200">
-                            <div className="flex justify-between items-center mb-2">
-                                <Link to={`/profile/${item.creator_id}`} className="flex items-center space-x-2 font-bold hover:underline text-gray-800 dark:text-gray-200">
-                                    <FaUserCircle className="w-6 h-6 text-gray-400" />
-                                    <span>{item.creator_name}</span>
-                                </Link>
-                                <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(item.created_at).toLocaleDateString()}</span>
-                            </div>
-                            <Link to={`/media/${item.id}`}>
-                                <p className="my-1">{item.title}</p>
-                                <img src={item.thumbnail_blob_url || item.blob_url} alt={item.title} className="mt-2 rounded-2xl border border-gray-200 dark:border-gray-700 w-full object-cover" />
-                                <div className="flex items-center text-gray-500 dark:text-gray-400 space-x-8 mt-3">
-                                    <div className="flex items-center space-x-2 hover:text-blue-500"><FaRegComment /> <span>{item.comment_count || 0}</span></div>
-                                    <div className="flex items-center space-x-2 hover:text-yellow-500"><FaStar /> <span>{parseFloat(item.average_rating || 0).toFixed(1)}</span></div>
+                    {data.pages.map((page, pageIndex) => (
+                        <React.Fragment key={pageIndex}>
+                            {page.data.map((item) => (
+                                <div key={item.id} className="p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <Link to={`/profile/${item.creator_id}`} className="flex items-center space-x-2 font-bold hover:underline text-gray-800 dark:text-gray-200">
+                                            <FaUserCircle className="w-6 h-6 text-gray-400" />
+                                            <span>{item.creator_name}</span>
+                                        </Link>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(item.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <Link to={`/media/${item.id}`}>
+                                        <p className="my-1">{item.title}</p>
+                                        <img src={item.thumbnail_blob_url || item.blob_url} alt={item.title} className="mt-2 rounded-2xl border border-gray-200 dark:border-gray-700 w-full object-cover" />
+                                        <div className="flex items-center text-gray-500 dark:text-gray-400 space-x-8 mt-3">
+                                            <div className="flex items-center space-x-2 hover:text-blue-500"><FaRegComment /> <span>{item.comment_count || 0}</span></div>
+                                            <div className="flex items-center space-x-2 hover:text-yellow-500"><FaStar /> <span>{parseFloat(item.average_rating || 0).toFixed(1)}</span></div>
+                                        </div>
+                                    </Link>
                                 </div>
-                            </Link>
-                        </div>
+                            ))}
+                        </React.Fragment>
                     ))}
+                    <div ref={loadMoreRef} className="p-4 text-center">
+                        {isFetchingNextPage ? 'Loading more...' : hasNextPage ? 'Scroll to load more' : 'Nothing more to load.'}
+                    </div>
                 </div>
             ) : (
                 <div className="text-center p-10">
