@@ -5,6 +5,7 @@ const mediaController = require('../controllers/mediaController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const ratingsRouter = require('./ratings');
 const commentsRouter = require('./comments');
+const searchController = require('../controllers/searchController');
 
 // Multer setup for in-memory storage
 const storage = multer.memoryStorage();
@@ -13,6 +14,9 @@ const upload = multer({ storage: storage });
 // Nested Routers
 router.use('/:media_id/ratings', ratingsRouter);
 router.use('/:media_id/comments', commentsRouter);
+
+// Search route
+router.use('/search', searchController.searchMedia);
 
 // Routes
 router.post(

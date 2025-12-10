@@ -1,29 +1,69 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaRegComment, FaStar, FaUserCircle, FaImage } from 'react-icons/fa';
+import { FaRegComment, FaStar, FaUserCircle, FaImage, FaSearch } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useState } from 'react';
 
-const fetchPublicMedia = async () => {
-    const { data } = await axios.get('/api/media');
+const fetchMedia = async (searchTerm) => {
+    // If a search term exists, use the search endpoint. Otherwise, get all public media.
+    // Note: The search endpoint seems to be /api/media/search based on your routes.
+    const url = searchTerm ? `/api/media/search?q=${searchTerm}` : '/api/media';
+    const { data } = await axios.get(url);
+    
     return data;
 };
 
 const HomePage = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [isSearchVisible, setIsSearchVisible] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // The query key now includes the search term.
+    // React Query will automatically re-run this query when `searchTerm` changes.
     const { data: media, error, isLoading } = useQuery({
-        queryKey: ['publicMedia'],
-        queryFn: fetchPublicMedia
+        queryKey: ['publicMedia', searchTerm],
+        queryFn: () => fetchMedia(searchTerm),
+        keepPreviousData: true, // Optional: for a smoother UX while new search results are loading
     });
 
     if (error) return <div className="p-4">An error occurred: {error.message}</div>;
 
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        // The query will refetch automatically due to the change in `searchTerm` which is in the queryKey.
+    };
+
     return (
         <>
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                <h1 className="text-xl font-bold">Feeds</h1>
+                <div className="flex justify-between items-center">
+                    <h1 className="text-xl font-bold">PhotoShare</h1>
+                    <FaSearch
+                        className="text-xl cursor-pointer text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+                        onClick={() => setIsSearchVisible(!isSearchVisible)}
+                    />
+                </div>
             </div>
+
+            {isSearchVisible && (
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <form onSubmit={handleSearchSubmit} className="flex items-center">
+                        <input
+                            type="text"
+                            placeholder="Search by creator, title, or caption..."
+                            className="flex-1 p-2 border rounded-md mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            autoFocus
+                        />
+                        <button type="submit" className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            Search
+                        </button>
+                    </form>
+                </div>
+            )}
 
             {/* Sleek "Create Post" UI */}
             {user && user.role == 'creator' && ( // Only show if user is logged in AND is a creator
@@ -65,7 +105,7 @@ const HomePage = () => {
                 </div>
             ) : (
                 <div className="text-center p-10">
-                    <p className="text-gray-500 dark:text-gray-400">The gallery is empty.</p>
+                    <p className="text-gray-500 dark:text-gray-400">{searchTerm ? 'No results found.' : 'The gallery is empty.'}</p>
                 </div>
             )}
         </>
